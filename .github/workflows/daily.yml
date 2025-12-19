@@ -1,0 +1,35 @@
+name: Daily Commit
+
+on:
+  schedule:
+    # Runs daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Update activity log
+        run: |
+          TODAY=$(date -u '+%Y-%m-%d')
+          if ! grep -q "$TODAY" activity.log; then
+            echo "$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> activity.log
+          fi
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add activity.log
+          if ! git diff --staged --quiet; then
+            git commit -m "Daily activity log update [skip ci]"
+            git push
+          fi
+
