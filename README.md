@@ -29,4 +29,3 @@ To use this in your own repository:
 - The workflow uses `[skip ci]` in commit messages to prevent triggering other workflows
 - Commits are only made if there are actual changes (using `git diff --staged --quiet`)
 - This follows GitHub's terms of service for automated contributions
-
