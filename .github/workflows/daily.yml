@@ -1,13 +1,19 @@
-name: Daily Commit
+name: Daily Commits (7-10 per day)
 
 on:
   schedule:
-    # Runs daily at 00:00 UTC
-    - cron: '0 0 * * *'
+    # Runs multiple times daily to make 7-10 commits
+    # Spread throughout the day for natural pattern
+    - cron: '0 2 * * *'   # 2:00 AM UTC - First batch
+    - cron: '0 6 * * *'   # 6:00 AM UTC - Second batch
+    - cron: '0 10 * * *'  # 10:00 AM UTC - Third batch
+    - cron: '0 14 * * *'  # 2:00 PM UTC - Fourth batch
+    - cron: '0 18 * * *'  # 6:00 PM UTC - Fifth batch
+    - cron: '0 22 * * *'  # 10:00 PM UTC - Sixth batch
   workflow_dispatch: # Allows manual triggering
 
 jobs:
-  daily-commit:
+  daily-commits:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,21 +21,78 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Update activity log
-        run: |
-          TODAY=$(date -u '+%Y-%m-%d')
-          if ! grep -q "$TODAY" activity.log; then
-            echo "$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> activity.log
-          fi
-      
-      - name: Commit and push changes
+      - name: Configure Git
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add activity.log
-          if ! git diff --staged --quiet; then
-            git commit -m "Daily activity log update [skip ci]"
-            git push
+      
+      - name: Check if commits already made today
+        id: check_date
+        run: |
+          TODAY=$(date -u '+%Y-%m-%d')
+          LAST_COMMIT_DATE=$(git log -1 --format=%cd --date=short 2>/dev/null || echo "")
+          if [ "$LAST_COMMIT_DATE" = "$TODAY" ]; then
+            COMMIT_COUNT=$(git log --since="midnight" --oneline | wc -l)
+            echo "commits_today=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+            echo "already_committed=true" >> $GITHUB_OUTPUT
+          else
+            echo "commits_today=0" >> $GITHUB_OUTPUT
+            echo "already_committed=false" >> $GITHUB_OUTPUT
           fi
+      
+      - name: Make multiple commits
+        if: steps.check_date.outputs.commits_today < 10
+        run: |
+          # Calculate how many commits to make (target: 7-10 total per day)
+          COMMITS_TODAY=${{ steps.check_date.outputs.commits_today }}
+          TARGET_TOTAL=$((RANDOM % 4 + 7))  # Random between 7-10
+          REMAINING=$((TARGET_TOTAL - COMMITS_TODAY))
+          
+          # Make 1-2 commits per workflow run to spread them out
+          if [ $REMAINING -gt 0 ]; then
+            COMMITS_TO_MAKE=$((RANDOM % 2 + 1))  # 1 or 2 commits
+            if [ $COMMITS_TO_MAKE -gt $REMAINING ]; then
+              COMMITS_TO_MAKE=$REMAINING
+            fi
+            
+            COMMIT_MESSAGES=(
+              "Daily activity update"
+              "Code maintenance"
+              "Project progress"
+              "Documentation update"
+              "Code refactoring"
+              "Bug fixes"
+              "Feature development"
+              "Testing improvements"
+              "Performance optimization"
+              "Code review updates"
+            )
+            
+            for i in $(seq 1 $COMMITS_TO_MAKE); do
+              MESSAGE=${COMMIT_MESSAGES[$RANDOM % ${#COMMIT_MESSAGES[@]}]}
+              TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+              echo "" >> activity.log
+              echo "$TIMESTAMP - $MESSAGE - Commit $i/$COMMITS_TO_MAKE" >> activity.log
+              
+              git add activity.log
+              git commit -m "$MESSAGE - Commit $i/$COMMITS_TO_MAKE [skip ci]" || true
+              
+              # Small random delay between commits (if making multiple)
+              if [ $i -lt $COMMITS_TO_MAKE ]; then
+                sleep $((RANDOM % 60 + 30))  # 30-90 seconds
+              fi
+            done
+            
+            # Push all commits
+            git push || true
+          fi
+      
+      - name: Summary
+        run: |
+          COMMITS_TODAY=${{ steps.check_date.outputs.commits_today }}
+          echo "✓ Commits made today: $COMMITS_TODAY"
+          echo "✓ Target: 7-10 commits per day"
 

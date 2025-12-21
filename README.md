@@ -4,21 +4,32 @@
 
 ## ✨ Features
 
-- 🤖 **Fully Automatic** - Runs daily at 2:00 AM, no manual intervention needed
+- 🌐 **24/7 Cloud Automation** - GitHub Actions runs even when your PC is off!
+- 🤖 **Fully Automatic** - Runs daily, no manual intervention needed
 - 🚀 **Auto-Push to GitHub** - All commits automatically pushed to update your graph
-- 🎨 **Beautiful Web UI** - Monitor status and control the system
+- 🎨 **Beautiful Web UI** - Monitor status and control the system (local app)
 - 📊 **Smart Scheduling** - Prevents duplicate commits, runs on startup if needed
 - ⚡ **Windows Auto-Start** - Can run automatically when you log in
 - 🎯 **Natural Pattern** - Random delays between commits (30-120 seconds)
 - 📈 **7-10 Commits Daily** - Randomly selected for natural appearance
+- ☁️ **Dual System** - Both local app AND GitHub Actions for maximum reliability
 
 ## 🎯 How It Works (Fully Automatic!)
 
+### 🌐 GitHub Actions (24/7 Cloud - Primary Method)
+1. **Runs in the Cloud:** GitHub Actions runs 6 times daily (2 AM, 6 AM, 10 AM, 2 PM, 6 PM, 10 PM UTC)
+2. **Smart Distribution:** Makes 1-2 commits per run, totaling 7-10 commits per day
+3. **Works 24/7:** Runs even when your PC is completely off!
+4. **No Setup Needed:** Already configured and ready to go
+
+### 💻 Local App (Backup/Manual Control)
 1. **On Startup:** Checks if commits were made today, if not - starts immediately
-2. **Daily Schedule:** Automatically runs at 2:00 AM every day
+2. **Daily Schedule:** Automatically runs at 2:00 AM every day (when PC is on)
 3. **Makes Commits:** Creates 7-10 commits with random intervals
-4. **Auto-Push:** Pushes all commits to GitHub automatically
-5. **No Manual Work:** Just run it once and forget about it!
+4. **Web UI:** Monitor and control via http://localhost:5000
+5. **Auto-Push:** Pushes all commits to GitHub automatically
+
+**Best of Both Worlds:** GitHub Actions ensures commits happen 24/7, while the local app gives you control and monitoring!
 
 The system:
 - Makes 7-10 commits per day (randomly selected)
@@ -30,7 +41,19 @@ The system:
 
 ## 🚀 Setup (One-Time Setup, Then Fully Automatic!)
 
-### Prerequisites
+### ✅ GitHub Actions (Already Set Up!)
+
+**Good News:** The GitHub Actions workflow is already configured! It will:
+- ✅ Run automatically 6 times daily
+- ✅ Make 7-10 commits per day
+- ✅ Work 24/7 even when your PC is off
+- ✅ No additional setup needed!
+
+Just push this code to GitHub and it starts working immediately!
+
+### 💻 Local App Setup (Optional - for monitoring/control)
+
+#### Prerequisites
 
 - Python 3.7 or higher
 - Git installed and configured
