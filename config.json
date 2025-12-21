@@ -1,0 +1,17 @@
+{
+    "auto_mode": true,
+    "scheduled_time": {
+        "hour": 2,
+        "minute": 0
+    },
+    "commit_range": {
+        "min": 7,
+        "max": 10
+    },
+    "delay_range": {
+        "min_seconds": 30,
+        "max_seconds": 120
+    },
+    "auto_push": true
+}
+

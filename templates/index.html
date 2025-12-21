@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily GitHub Commits - Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: #333;
+            font-weight: 700;
+        }
+
+        .status-value.running {
+            color: #4CAF50;
+        }
+
+        .status-value.stopped {
+            color: #f44336;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-start:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+        }
+
+        .btn-stop:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-stop:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Daily GitHub Commits</h1>
+        <p class="subtitle">Automated commit system (7-10 commits per day)</p>
+
+        <div class="status-card">
+            <div class="status-item">
+                <span class="status-label">Status:</span>
+                <span class="status-value" id="status">Stopped</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Today's Commits:</span>
+                <span class="status-value" id="todayCommits">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Total Commits (This Run):</span>
+                <span class="status-value" id="totalCommits">0</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Last Run:</span>
+                <span class="status-value" id="lastRun">Never</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Auto Mode:</span>
+                <span class="status-value running" id="autoMode">Enabled</span>
+            </div>
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-start" id="startBtn" onclick="startCommits()">Start Commits</button>
+            <button class="btn-stop" id="stopBtn" onclick="stopCommits()" disabled>Stop</button>
+        </div>
+
+        <div class="info-box">
+            <h3>ℹ️ Automatic Mode Enabled</h3>
+            <p>
+                <strong>Fully Automatic:</strong> The system automatically makes 7-10 commits daily at 2:00 AM and pushes them to GitHub.
+                <br><br>
+                <strong>On Startup:</strong> If no commits were made today, the system will start immediately.
+                <br><br>
+                <strong>Manual Control:</strong> You can also manually start/stop commits using the buttons above.
+                <br><br>
+                <strong>Git Push:</strong> All commits are automatically pushed to GitHub to update your contribution graph.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let statusInterval;
+
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').textContent = data.running ? 'Running' : 'Stopped';
+                    document.getElementById('status').className = 'status-value ' + (data.running ? 'running' : 'stopped');
+                    document.getElementById('todayCommits').textContent = data.today_commits || 0;
+                    document.getElementById('totalCommits').textContent = data.total_commits || 0;
+                    document.getElementById('lastRun').textContent = data.last_run || 'Never';
+                    document.getElementById('autoMode').textContent = data.auto_mode ? 'Enabled' : 'Disabled';
+                    
+                    const startBtn = document.getElementById('startBtn');
+                    const stopBtn = document.getElementById('stopBtn');
+                    const progressBar = document.getElementById('progressBar');
+                    const progressFill = document.getElementById('progressFill');
+                    
+                    if (data.running) {
+                        startBtn.disabled = true;
+                        stopBtn.disabled = false;
+                        progressBar.style.display = 'block';
+                        const progress = data.total_commits > 0 ? 
+                            Math.min(100, (data.today_commits / data.total_commits) * 100) : 0;
+                        progressFill.style.width = progress + '%';
+                        progressFill.textContent = Math.round(progress) + '%';
+                    } else {
+                        startBtn.disabled = false;
+                        stopBtn.disabled = true;
+                        progressBar.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function startCommits() {
+            fetch('/api/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Started making commits!');
+                        updateStatus();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to start commits');
+                });
+        }
+
+        function stopCommits() {
+            fetch('/api/stop', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Stopped commit process');
+                        updateStatus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to stop commits');
+                });
+        }
+
+        // Update status every 2 seconds
+        statusInterval = setInterval(updateStatus, 2000);
+        updateStatus();
+    </script>
+</body>
+</html>
+
