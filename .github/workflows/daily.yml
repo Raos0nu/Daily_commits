@@ -58,21 +58,12 @@ jobs:
               COMMITS_TO_MAKE=$REMAINING
             fi
             
-            COMMIT_MESSAGES=(
-              "Daily activity update"
-              "Code maintenance"
-              "Project progress"
-              "Documentation update"
-              "Code refactoring"
-              "Bug fixes"
-              "Feature development"
-              "Testing improvements"
-              "Performance optimization"
-              "Code review updates"
-            )
+            # Array of commit messages
+            COMMIT_MESSAGES="Daily activity update|Code maintenance|Project progress|Documentation update|Code refactoring|Bug fixes|Feature development|Testing improvements|Performance optimization|Code review updates"
             
             for i in $(seq 1 $COMMITS_TO_MAKE); do
-              MESSAGE=${COMMIT_MESSAGES[$RANDOM % ${#COMMIT_MESSAGES[@]}]}
+              # Select random message from array
+              MESSAGE=$(echo "$COMMIT_MESSAGES" | tr '|' '\n' | shuf -n 1)
               TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
               echo "" >> activity.log
               echo "$TIMESTAMP - $MESSAGE - Commit $i/$COMMITS_TO_MAKE" >> activity.log
