@@ -47,9 +47,15 @@ The system:
 - ✅ Run automatically 6 times daily
 - ✅ Make 7-10 commits per day
 - ✅ Work 24/7 even when your PC is off
-- ✅ No additional setup needed!
 
-Just push this code to GitHub and it starts working immediately!
+**⚠️ IMPORTANT:** To make commits count on your contribution graph, you need to set up a Personal Access Token (PAT). See `SETUP_GITHUB_ACTIONS.md` for detailed instructions.
+
+**Quick Setup:**
+1. Create a PAT with `repo` scope in GitHub Settings → Developer settings
+2. Add it as a secret named `PERSONAL_ACCESS_TOKEN` in your repository
+3. (Optional) Add `GIT_EMAIL` and `GIT_NAME` secrets with your GitHub email/username
+
+Without the PAT, commits will still be made but won't show on your contribution graph!
 
 ### 💻 Local App Setup (Optional - for monitoring/control)
 

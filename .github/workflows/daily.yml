@@ -22,12 +22,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          persist-credentials: true
       
-      - name: Configure Git
+      - name: Configure Git with your credentials
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          # Use your GitHub email and username for commits to count on your graph
+          git config --local user.email "${{ secrets.GIT_EMAIL || 'github-actions[bot]@users.noreply.github.com' }}"
+          git config --local user.name "${{ secrets.GIT_NAME || 'github-actions[bot]' }}"
       
       - name: Check if commits already made today
         id: check_date
